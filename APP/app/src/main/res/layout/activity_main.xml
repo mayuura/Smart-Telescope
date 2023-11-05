@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <!-- Input fields for pitch, roll, yaw, latitude, and longitude -->
+    <EditText
+        android:id="@+id/pitchInput"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Pitch (degrees)"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"/>
+
+    <EditText
+        android:id="@+id/rollInput"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Roll (degrees)"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pitchInput"/>
+
+    <EditText
+        android:id="@+id/yawInput"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Yaw (degrees)"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rollInput"/>
+
+    <EditText
+        android:id="@+id/latitudeInput"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Latitude (degrees)"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/yawInput"/>
+
+    <EditText
+        android:id="@+id/longitudeInput"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="Longitude (degrees)"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/latitudeInput"/>
+
+    <!-- Button to trigger the calculation and query -->
+    <Button
+        android:id="@+id/calculateButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Calculate and Query"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/longitudeInput"/>
+
+    <!-- Text view to display the results -->
+    <TextView
+        android:id="@+id/resultText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/calculateButton"
+        android:text=""
+        android:gravity="center"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

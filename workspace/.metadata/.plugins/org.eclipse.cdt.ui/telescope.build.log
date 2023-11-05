@@ -1,0 +1,10 @@
+18:04:10 **** Incremental Build of configuration Debug for project telescope ****
+make -j8 all 
+arm-none-eabi-size   telescope.elf 
+   text	   data	    bss	    dec	    hex	filename
+  14128	    120	   1744	  15992	   3e78	telescope.elf
+Finished building: default.size.stdout
+ 
+
+18:04:11 Build Finished. 0 errors, 0 warnings. (took 910ms)
+
