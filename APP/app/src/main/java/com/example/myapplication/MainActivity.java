@@ -2,18 +2,23 @@ package com.example.myapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.icu.util.Calendar;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.io.InputStream;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity implements ScriptExecutionListener {
+
+public class MainActivity extends AppCompatActivity  {
     private EditText pitchInput, rollInput, yawInput, latitudeInput, longitudeInput;
     private TextView resultText;
     private Button calculateButton;
@@ -23,6 +28,7 @@ public class MainActivity extends AppCompatActivity implements ScriptExecutionLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //all these inputs are meant to be retrieved from the stm32
         pitchInput = findViewById(R.id.pitchInput);
         rollInput = findViewById(R.id.rollInput);
         yawInput = findViewById(R.id.yawInput);
@@ -32,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements ScriptExecutionLi
         calculateButton = findViewById(R.id.calculateButton);
 
         calculateButton.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View view) {
                 double pitch = Double.parseDouble(pitchInput.getText().toString());
@@ -43,21 +50,27 @@ public class MainActivity extends AppCompatActivity implements ScriptExecutionLi
                 double ra = calculateRA(roll, longitude);
                 double dec = calculateDec(pitch, yaw, latitude);
 
-                //DatabaseQueryTask queryTask = new DatabaseQueryTask(MainActivity.this); // Pass the MainActivity instance as the listener
-                //queryTask.execute(ra, dec, (double) 3); // Pass your desired radius as the third parameter
-                resultText.setText(ra+"d "+dec+"d");
+
+                resultText.setText(ra + "d " + dec + "d");
+
+
+                // Construct the Simbad API URL
+                String simbadApiUrl = "https://simbad.cds.unistra.fr/simbad/sim-coo?output.format=ASCII&Coord="+3908.4429453+"d+"+-1.442668530641793+"d&Radius=3&Radius.unit=arcmin";
+
+                // Execute the Simbad API query asynchronously
+                new SimbadQueryAsyncTask().execute(simbadApiUrl);
             }
         });
     }
 
-    // Implement the conversion and database query methods.
+
     private double calculateRA( double roll, double longitude) {
         double Ra;
         double JD_J2000= 2451545.0;//reference
         double JD=calculateJD();//JD of the current day D= JD-JD_J2000;
 
         double D= JD-JD_J2000;
-        double lambda=5.9939724; //longitude in degrees T=23; %the number of centuries since the J2000 epoch
+        //double lambda=5.9939724; longitude in degrees T=23; %the number of centuries since the J2000 epoch
         double T=23;
         double T0=280.46061837;
         double LST=100.46 + 0.985647 * D + longitude + 15 * (T - T0);;
@@ -100,15 +113,119 @@ public class MainActivity extends AppCompatActivity implements ScriptExecutionLi
 
         return JD;
     }
-    // Additional code for the ScriptExecutionListener
-    @Override
-    public void onScriptExecuted(List<String> output, int exitCode) {
-        // This method is called when the script execution is finished
-        // Handle the script execution results here
-        // Update your UI or perform any other necessary action
-        resultText.setText("Script execution completed. Exit code: " + exitCode);
-        // Handle the output data in the 'output' variable
+    private String Ra_to_sexa(double ra){
+        return "20 33 44.4";
+    }
+    private String Dec_to_sexa(double dec){
+        return"-01 25 34";
     }
 
+
+
+
+    private class SimbadQueryAsyncTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... urls) {
+            // Perform the Simbad query in the background
+            try {
+                return HttpUtils.fetchData(urls[0]);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            // Handle the Simbad query result on the main thread
+            if (result != null) {
+                Log.d("SimbadQueryResult", result);
+                resultText.setText(result);
+                // Handle the  response (parse and extract the data )
+                handleSimbadQueryResult(result);
+            } else {
+                Log.e("SimbadQueryResult", "Error in Simbad query");
+                resultText.setText("Error");
+            }
+        }
+
+        // Method to handle the Simbad query result on the main thread
+        private void handleSimbadQueryResult(String result) {
+
+            Log.d("processed data :", paresedDataToString(asciiParser(result)));
+            Log.d("objects :", listOfObjectsToString(asciiToObjects(result)));
+            resultText.setText(listOfObjectsToString(asciiToObjects(result)));
+        }
+
+        private List<String> asciiParser(String simbadResponse) {
+
+            // Split the response into lines
+            String[] lines = simbadResponse.split("\n");
+            List<String> data = new ArrayList<>();
+            for (int i = 5; i < lines.length; i++) {
+                String[] columns = lines[i].split("\\|");
+
+                String number = columns[0];
+                String distAsec = (columns.length > 1) ? columns[1] : "";
+                String identifier = (columns.length > 2) ? columns[2] : "";
+                String type = (columns.length > 3) ? columns[3] : "";
+                String coord = (columns.length > 4) ? columns[4] : "";
+
+                data.add(number);
+                data.add(distAsec);
+                data.add(identifier);
+                data.add(type);
+                data.add(coord);
+            }
+            return data;
+        }
+        private String paresedDataToString(List<String> list){
+            String out="";
+            for(String line : list){
+                out+=line+"\n";
+            }
+            return out;
+        }
+        private List<CelestialObject> asciiToObjects(String simbadResponse) {
+
+            // Split the response into lines
+            String[] lines = simbadResponse.split("\n");
+            List<CelestialObject> list = new ArrayList<>();
+            for (int i = 0; i < lines.length; i++) {
+
+
+                String[] columns = lines[i].split("\\|");
+                // Skip lines that are headers or irrelevant
+                if (columns.length < 5 || !isInteger(columns[0])) {
+                    continue;
+                }
+                String number = columns[0];
+                String distAsec = (columns.length > 1) ? columns[1] : "";
+                String identifier = (columns.length > 2) ? columns[2] : "";
+                String type = (columns.length > 3) ? columns[3] : "";
+                String coord = (columns.length > 4) ? columns[4] : "";
+
+
+                //create the object
+                CelestialObject object=new CelestialObject(identifier,type,coord,distAsec);
+                list.add(object);
+            }
+            return list;
+        }
+        private String listOfObjectsToString(List<CelestialObject> list){
+            String out="";
+            for(CelestialObject object : list){
+                out+=object.toString()+"\n";
+            }
+            return out;
+        }
+        public  boolean isInteger(String str) {
+            try {
+                Integer.parseInt(str);
+                return true;
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        }
+    }
 }
 
