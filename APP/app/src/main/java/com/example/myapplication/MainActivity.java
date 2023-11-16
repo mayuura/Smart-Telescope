@@ -203,10 +203,10 @@ public class MainActivity extends AppCompatActivity  {
                 String identifier = (columns.length > 2) ? columns[2] : "";
                 String type = (columns.length > 3) ? columns[3] : "";
                 String coord = (columns.length > 4) ? columns[4] : "";
-
+                String typeDescription=SimbadObjectType.getDescription(type);
 
                 //create the object
-                CelestialObject object=new CelestialObject(identifier,type,coord,distAsec);
+                CelestialObject object=new CelestialObject(identifier,type+": "+typeDescription,coord,distAsec);
                 list.add(object);
             }
             return list;
