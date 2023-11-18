@@ -69,32 +69,48 @@ public class MainActivity extends AppCompatActivity  {
 
 
     private double calculateRA( double roll, double longitude) {
-        double Ra;
-        double JD_J2000= 2451545.0;//reference
-        double JD=calculateJD();//JD of the current day D= JD-JD_J2000;
+        //all angles are in degrees
 
-        double D= JD-JD_J2000;
         //double lambda=5.9939724; longitude in degrees T=23; %the number of centuries since the J2000 epoch
-        double T=(JD-JD_J2000)/36525;
-        double T0=280.46061837;
-        double LST=100.46 + 0.985647 * D + longitude + 15 * (T - T0);
-        LST = LST % 360.0;
+        double LST=calculateLST(longitude);
+
         double alpha=roll*Math.PI/180;
 
         // Calculate RA based on user input.
-        Ra=LST-alpha;
+        double Ra=LST-alpha;
 
         return Ra;
     }
+    private double calculateLST(double longitude) {
+        double JD_J2000 = 2451545.0; // reference
+        double JD = calculateJD(); // JD of the current day D = JD - JD_J2000;
+
+        double D = JD - JD_J2000;
+        double T = D / 36525;
+
+        // Calculate GMST
+        double theta0 = 280.46061837 + 360.98564736629 * (JD - JD_J2000) + (0.000387933 * T * T) - (T * T * T / 38710000.0);
+        double gmst = theta0 % 360.0;
+
+        // Calculate LST using the local longitude
+        double lst = gmst + longitude;
+
+        // Normalize LST to the range [0, 360)
+        if (lst < 0) {
+            lst += 360.0;
+        }
+
+        return lst;
+    }
 
     private double calculateDec(double pitch,double yaw, double latitude) {
-
+        //all angles are in degrees
         double delta_0=pitch*Math.PI/180;
-        double phi=latitude; //latitude=47.2520176 in our example
+        double phi=latitude*Math.PI/180; //latitude=47.2520176 in our example
         double theta=yaw*Math.PI/180;
         // Calculate Dec based on user input.
-        double dec= Math.asin(Math.sin(delta_0) * Math.sin(phi) + Math.cos(delta_0) * Math.cos(phi) * Math.cos(theta));
-        return dec;
+        double dec= Math.asin(Math.sin(delta_0) * Math.sin(phi) + Math.cos(delta_0) * Math.cos(phi) * Math.cos(theta)); //this result is in radians
+        return dec* 180 / Math.PI;//convert dec to degrees
     }
 
 
