@@ -3,13 +3,18 @@ package com.example.myapplication;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.icu.util.Calendar;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import java.io.IOException;
@@ -24,8 +29,7 @@ public class MainActivity extends AppCompatActivity  {
     private Button calculateButton;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreate(Bundle savedInstanceState) {        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         //all these inputs are meant to be retrieved from the stm32
@@ -55,7 +59,7 @@ public class MainActivity extends AppCompatActivity  {
 
 
                 // Construct the Simbad API URL
-                String simbadApiUrl = "https://simbad.cds.unistra.fr/simbad/sim-coo?output.format=ASCII&Coord="+3908.4429453+"d+"+-1.442668530641793+"d&Radius=3&Radius.unit=arcmin";
+                String simbadApiUrl = "https://simbad.cds.unistra.fr/simbad/sim-coo?output.format=ASCII&Coord="+ra+"d+"+dec+"d&Radius=3&Radius.unit=arcmin";
 
                 // Execute the Simbad API query asynchronously
                 new SimbadQueryAsyncTask().execute(simbadApiUrl);
@@ -71,9 +75,10 @@ public class MainActivity extends AppCompatActivity  {
 
         double D= JD-JD_J2000;
         //double lambda=5.9939724; longitude in degrees T=23; %the number of centuries since the J2000 epoch
-        double T=23;
+        double T=(JD-JD_J2000)/36525;
         double T0=280.46061837;
-        double LST=100.46 + 0.985647 * D + longitude + 15 * (T - T0);;
+        double LST=100.46 + 0.985647 * D + longitude + 15 * (T - T0);
+        LST = LST % 360.0;
         double alpha=roll*Math.PI/180;
 
         // Calculate RA based on user input.
@@ -139,13 +144,47 @@ public class MainActivity extends AppCompatActivity  {
             // Handle the Simbad query result on the main thread
             if (result != null) {
                 Log.d("SimbadQueryResult", result);
-                resultText.setText(result);
+                //resultText.setText(result);
                 // Handle the  response (parse and extract the data )
                 handleSimbadQueryResult(result);
+                createMenu(result);
+
             } else {
                 Log.e("SimbadQueryResult", "Error in Simbad query");
                 resultText.setText("Error");
             }
+        }
+        private void createMenu(String result){
+
+            // Populate the Spinner with object names
+            Spinner objectSpinner = findViewById(R.id.objectSpinner);
+            List<String> objectNames = new ArrayList<>();
+            objectNames.add("Select an object");  // Default item
+            for (CelestialObject celestialObject : asciiToObjects(result)) {
+                objectNames.add(celestialObject.getIdentifier());
+            }
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_spinner_item, objectNames);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            objectSpinner.setAdapter(adapter);
+
+            // Set a listener for item selection
+            objectSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                    // Handle the selected item
+                    String selectedObjectName = objectNames.get(position);
+                    if (!selectedObjectName.equals("Select an object")) {
+                        // Perform actions based on the selected object
+                        // For example, display details or perform another API query
+                        handleSelectedObject(asciiToObjects(result).get(position - 1));
+                    }
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> parentView) {
+                    // Do nothing here
+                }
+            });
         }
 
         // Method to handle the Simbad query result on the main thread
@@ -153,7 +192,40 @@ public class MainActivity extends AppCompatActivity  {
 
             Log.d("processed data :", paresedDataToString(asciiParser(result)));
             Log.d("objects :", listOfObjectsToString(asciiToObjects(result)));
-            resultText.setText(listOfObjectsToString(asciiToObjects(result)));
+            //resultText.setText(listOfObjectsToString(asciiToObjects(result)));
+        }
+        private void handleSelectedObject(CelestialObject selectedObject) {
+            // Implement actions to be performed when an object is selected from the Spinner
+            // For example, display details or perform another API query
+
+            createAlertDialog(selectedObject);
+            Log.d("Selected Object", selectedObject.toString());
+        }
+        //create an alert dialog that displays the object details
+        private void createAlertDialog(CelestialObject selectedObject){
+            String objectType = selectedObject.getType();
+            String objectDistance = selectedObject.getDistance();
+
+            // Create and configure an AlertDialog
+            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+            builder.setTitle("Instructions");
+
+            // Calculate telescope adjustments and display instructions
+            double angularSeparation =Double.parseDouble(selectedObject.getDistance().replace(",",".")); /* get the angular separation */;
+            double fieldOfView = 60;/* get the telescope's field of view in arcseconds per degree */;
+
+            String instructions = TelescopeAdjustmentCalculator.calculateTelescopeAdjustment(angularSeparation, fieldOfView);
+            builder.setMessage(instructions);
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss(); // Close the dialog when the "OK" button is clicked
+                }
+            });
+
+            // Show the AlertDialog
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
         }
 
         private List<String> asciiParser(String simbadResponse) {

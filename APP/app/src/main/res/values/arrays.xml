@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/values/arrays.xml -->
+<resources>
+    <string-array name="objects_array">
+        <!-- Add empty item as the default -->
+        <item>Select an object</item>
+    </string-array>
+</resources>
