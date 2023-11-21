@@ -25,6 +25,8 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity  {
     private EditText pitchInput, rollInput, yawInput, latitudeInput, longitudeInput;
+    private double currentRa;
+    private double currentDec;
     private TextView resultText;
     private Button calculateButton;
 
@@ -53,7 +55,8 @@ public class MainActivity extends AppCompatActivity  {
 
                 double ra = calculateRA(roll, longitude);
                 double dec = calculateDec(pitch, yaw, latitude);
-
+                currentRa=ra;
+                currentDec=dec;
 
                 resultText.setText(ra + "d " + dec + "d");
 
@@ -134,12 +137,7 @@ public class MainActivity extends AppCompatActivity  {
 
         return JD;
     }
-    private String Ra_to_sexa(double ra){
-        return "20 33 44.4";
-    }
-    private String Dec_to_sexa(double dec){
-        return"-01 25 34";
-    }
+
 
 
 
@@ -230,8 +228,14 @@ public class MainActivity extends AppCompatActivity  {
             double angularSeparation =Double.parseDouble(selectedObject.getDistance().replace(",",".")); /* get the angular separation */;
             double fieldOfView = 60;/* get the telescope's field of view in arcseconds per degree */;
 
-            String instructions = TelescopeAdjustmentCalculator.calculateTelescopeAdjustment(angularSeparation, fieldOfView);
-            builder.setMessage(instructions);
+            String targetRa=selectedObject.getRa();
+            String targetDec=selectedObject.getDec();
+            Log.d("targetRa : ",targetRa);
+            Log.d("targetDec : ",targetDec);
+
+            String instructions = TelescopeAdjustmentCalculator.calculateTelescopeAdjustment(targetRa, targetDec,currentRa,currentDec);
+            String description = "The selected object is: "+selectedObject.getType();
+            builder.setMessage(description+"\n"+instructions);
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -257,7 +261,6 @@ public class MainActivity extends AppCompatActivity  {
                 String identifier = (columns.length > 2) ? columns[2] : "";
                 String type = (columns.length > 3) ? columns[3] : "";
                 String coord = (columns.length > 4) ? columns[4] : "";
-
                 data.add(number);
                 data.add(distAsec);
                 data.add(identifier);
@@ -291,10 +294,10 @@ public class MainActivity extends AppCompatActivity  {
                 String identifier = (columns.length > 2) ? columns[2] : "";
                 String type = (columns.length > 3) ? columns[3] : "";
                 String coord = (columns.length > 4) ? columns[4] : "";
-                String typeDescription=SimbadObjectType.getDescription(type);
+                Log.d("Type : ",type);
 
                 //create the object
-                CelestialObject object=new CelestialObject(identifier,type+": "+typeDescription,coord,distAsec);
+                CelestialObject object=new CelestialObject(identifier,type,coord,distAsec);
                 list.add(object);
             }
             return list;
