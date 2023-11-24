@@ -79,10 +79,8 @@ public class MainActivity extends AppCompatActivity  {
 
         double alpha=roll*Math.PI/180;
 
-        // Calculate RA based on user input.
-        double Ra=LST-alpha;
-
-        return Ra;
+        // Ra=LST_alpha
+        return LST-alpha;
     }
     private double calculateLST(double longitude) {
         double JD_J2000 = 2451545.0; // reference
@@ -131,11 +129,10 @@ public class MainActivity extends AppCompatActivity  {
         int second = currentDateTime.get(Calendar.SECOND);
 
         // Use these components to calculate the JD
-        double JD = 367 * year - Math.floor(7 * (year + Math.floor((month + 9) / 12.0)) / 4.0)
+        return 367 * year - Math.floor(7 * (year + Math.floor((month + 9) / 12.0)) / 4.0)
                 + Math.floor(275 * month / 9.0) + day + 1721013.5
                 + (hour + minute / 60.0 + second / 3600.0) / 24.0;
 
-        return JD;
     }
 
 
@@ -158,7 +155,6 @@ public class MainActivity extends AppCompatActivity  {
             // Handle the Simbad query result on the main thread
             if (result != null) {
                 Log.d("SimbadQueryResult", result);
-                //resultText.setText(result);
                 // Handle the  response (parse and extract the data )
                 handleSimbadQueryResult(result);
                 createMenu(result);
@@ -174,9 +170,11 @@ public class MainActivity extends AppCompatActivity  {
             Spinner objectSpinner = findViewById(R.id.objectSpinner);
             List<String> objectNames = new ArrayList<>();
             objectNames.add("Select an object");  // Default item
-            for (CelestialObject celestialObject : asciiToObjects(result)) {
+
+            for (CelestialObject celestialObject : CelestialObject.asciiToObjects(result)) {
                 objectNames.add(celestialObject.getIdentifier());
             }
+
             ArrayAdapter<String> adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_spinner_item, objectNames);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             objectSpinner.setAdapter(adapter);
@@ -190,7 +188,7 @@ public class MainActivity extends AppCompatActivity  {
                     if (!selectedObjectName.equals("Select an object")) {
                         // Perform actions based on the selected object
                         // For example, display details or perform another API query
-                        handleSelectedObject(asciiToObjects(result).get(position - 1));
+                        handleSelectedObject(CelestialObject.asciiToObjects(result).get(position - 1));
                     }
                 }
 
@@ -201,32 +199,24 @@ public class MainActivity extends AppCompatActivity  {
             });
         }
 
-        // Method to handle the Simbad query result on the main thread
+        // Method to handle the Simbad query result on the main thread , for now i am just using it to debug
         private void handleSimbadQueryResult(String result) {
 
-            Log.d("processed data :", paresedDataToString(asciiParser(result)));
-            Log.d("objects :", listOfObjectsToString(asciiToObjects(result)));
-            //resultText.setText(listOfObjectsToString(asciiToObjects(result)));
+            Log.d("processed data :", CelestialObject.paresedDataToString(CelestialObject.asciiParser(result)));
+            Log.d("objects :", CelestialObject.listOfObjectsToString(CelestialObject.asciiToObjects(result)));
         }
         private void handleSelectedObject(CelestialObject selectedObject) {
-            // Implement actions to be performed when an object is selected from the Spinner
-            // For example, display details or perform another API query
 
             createAlertDialog(selectedObject);
             Log.d("Selected Object", selectedObject.toString());
         }
+
         //create an alert dialog that displays the object details
         private void createAlertDialog(CelestialObject selectedObject){
-            String objectType = selectedObject.getType();
-            String objectDistance = selectedObject.getDistance();
 
             // Create and configure an AlertDialog
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
             builder.setTitle("Instructions");
-
-            // Calculate telescope adjustments and display instructions
-            double angularSeparation =Double.parseDouble(selectedObject.getDistance().replace(",",".")); /* get the angular separation */;
-            double fieldOfView = 60;/* get the telescope's field of view in arcseconds per degree */;
 
             String targetRa=selectedObject.getRa();
             String targetDec=selectedObject.getDec();
@@ -248,75 +238,6 @@ public class MainActivity extends AppCompatActivity  {
             alertDialog.show();
         }
 
-        private List<String> asciiParser(String simbadResponse) {
-
-            // Split the response into lines
-            String[] lines = simbadResponse.split("\n");
-            List<String> data = new ArrayList<>();
-            for (int i = 5; i < lines.length; i++) {
-                String[] columns = lines[i].split("\\|");
-
-                String number = columns[0];
-                String distAsec = (columns.length > 1) ? columns[1] : "";
-                String identifier = (columns.length > 2) ? columns[2] : "";
-                String type = (columns.length > 3) ? columns[3] : "";
-                String coord = (columns.length > 4) ? columns[4] : "";
-                data.add(number);
-                data.add(distAsec);
-                data.add(identifier);
-                data.add(type);
-                data.add(coord);
-            }
-            return data;
-        }
-        private String paresedDataToString(List<String> list){
-            String out="";
-            for(String line : list){
-                out+=line+"\n";
-            }
-            return out;
-        }
-        private List<CelestialObject> asciiToObjects(String simbadResponse) {
-
-            // Split the response into lines
-            String[] lines = simbadResponse.split("\n");
-            List<CelestialObject> list = new ArrayList<>();
-            for (int i = 0; i < lines.length; i++) {
-
-
-                String[] columns = lines[i].split("\\|");
-                // Skip lines that are headers or irrelevant
-                if (columns.length < 5 || !isInteger(columns[0])) {
-                    continue;
-                }
-                String number = columns[0];
-                String distAsec = (columns.length > 1) ? columns[1] : "";
-                String identifier = (columns.length > 2) ? columns[2] : "";
-                String type = (columns.length > 3) ? columns[3] : "";
-                String coord = (columns.length > 4) ? columns[4] : "";
-                Log.d("Type : ",type);
-
-                //create the object
-                CelestialObject object=new CelestialObject(identifier,type,coord,distAsec);
-                list.add(object);
-            }
-            return list;
-        }
-        private String listOfObjectsToString(List<CelestialObject> list){
-            String out="";
-            for(CelestialObject object : list){
-                out+=object.toString()+"\n";
-            }
-            return out;
-        }
-        public  boolean isInteger(String str) {
-            try {
-                Integer.parseInt(str);
-                return true;
-            } catch (NumberFormatException e) {
-                return false;
-            }
-        }
     }
 }
 
