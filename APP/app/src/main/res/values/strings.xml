@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">My Application</string>
+    <string name="hint_pitch">Pitch (degrees)</string>
+    <string name="hint_roll">Roll (degrees)</string>
+    <string name="hint_yaw">Yaw (degrees)</string>
+    <string name="hint_latitude">Latitude (degrees)</string>
+    <string name="hint_longitude">Longitude (degrees)</string>
+    <string name="button_text">Calculate and Query</string>
+
 </resources>

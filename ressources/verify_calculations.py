@@ -13,8 +13,10 @@ import astropy.units as u
 # Your telescope's location
 latitude = 47.2520176
 longitude = 5.9939724
+#values for 15/11
 calculated_ra=319.95114517284713
 calculated_dec=42.747982400000005
+
 # Use Skyfield to calculate RA and Dec
 ts = load.timescale()
 t = ts.now()
