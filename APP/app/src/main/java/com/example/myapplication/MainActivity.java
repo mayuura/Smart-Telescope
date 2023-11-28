@@ -24,11 +24,18 @@ import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity  {
-    private EditText pitchInput, rollInput, yawInput, latitudeInput, longitudeInput;
+    private TextView pitchInput, rollInput, yawInput, latitudeInput, longitudeInput;
     private double currentRa;
     private double currentDec;
     private TextView resultText;
     private Button calculateButton;
+
+    // Default values
+    private double defaultPitch = 0.0;
+    private double defaultRoll = 0.0;
+    private double defaultYaw = 0.0;
+    private double defaultLatitude = 47.2520176;
+    private double defaultLongitude = 5.9939724;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {        super.onCreate(savedInstanceState);
@@ -43,18 +50,20 @@ public class MainActivity extends AppCompatActivity  {
         resultText = findViewById(R.id.resultText);
         calculateButton = findViewById(R.id.calculateButton);
 
+        // Set default values
+        pitchInput.setText(String.valueOf(defaultPitch));
+        rollInput.setText(String.valueOf(defaultRoll));
+        yawInput.setText(String.valueOf(defaultYaw));
+        latitudeInput.setText(String.valueOf(defaultLatitude));
+        longitudeInput.setText(String.valueOf(defaultLongitude));
         calculateButton.setOnClickListener(new View.OnClickListener() {
             @SuppressLint("SetTextI18n")
             @Override
-            public void onClick(View view) {
-                double pitch = Double.parseDouble(pitchInput.getText().toString());
-                double roll = Double.parseDouble(rollInput.getText().toString());
-                double yaw = Double.parseDouble(yawInput.getText().toString());
-                double latitude = Double.parseDouble(latitudeInput.getText().toString());
-                double longitude = Double.parseDouble(longitudeInput.getText().toString());
+            public void onClick(View view) {//what happens when we click the button
 
-                double ra = calculateRA(roll, longitude);
-                double dec = calculateDec(pitch, yaw, latitude);
+
+                double ra = calculateRA(defaultRoll, defaultLongitude);
+                double dec = calculateDec(defaultPitch, defaultYaw, defaultLatitude);
                 currentRa=ra;
                 currentDec=dec;
 
