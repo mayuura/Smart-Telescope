@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.icu.util.Calendar;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,6 +31,7 @@ public class MainActivity extends AppCompatActivity  {
     private double currentDec;
     private TextView resultText;
     private Button calculateButton;
+
 
     // Default values
     private double defaultPitch = 0.0;
@@ -71,12 +74,27 @@ public class MainActivity extends AppCompatActivity  {
 
 
                 // Construct the Simbad API URL
-                String simbadApiUrl = "https://simbad.cds.unistra.fr/simbad/sim-coo?output.format=ASCII&Coord="+ra+"d+"+dec+"d&Radius=3&Radius.unit=arcmin";
+                String simbadApiUrl = "https://simbad.cds.unistra.fr/simbad/sim-coo?output.format=ASCII&Coord="+ra+"d+"+dec+"d&Radius=10&Radius.unit=arcmin";
 
                 // Execute the Simbad API query asynchronously
                 new SimbadQueryAsyncTask().execute(simbadApiUrl);
             }
         });
+        // Locate the "Previous" button in your layout
+        Button previousButton = findViewById(R.id.previousButton);
+
+        // Set a click listener for the "Previous" button
+        previousButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Start TelescopeMountActivity
+                Intent telescopeMountIntent = new Intent(MainActivity.this, TelescopeMountActivity.class);
+                startActivity(telescopeMountIntent);
+                finish(); // Optional: finish the current activity if you don't want to keep it in the back stack
+            }
+        });
+
+
     }
 
 
@@ -231,8 +249,14 @@ public class MainActivity extends AppCompatActivity  {
             String targetDec=selectedObject.getDec();
             Log.d("targetRa : ",targetRa);
             Log.d("targetDec : ",targetDec);
+            String instructions="";
+            if(TelescopeMountActivity.getMount().equals("Ra/Dec")) {
+                 instructions = TelescopeAdjustmentCalculator.calculateTelescopeAdjustment(targetRa, targetDec, currentRa, currentDec);
+            }
+            else{
+                instructions = TelescopeAdjustmentCalculator.calculateTelescopeAdjustment2(targetRa, targetDec, currentRa, currentDec);
 
-            String instructions = TelescopeAdjustmentCalculator.calculateTelescopeAdjustment(targetRa, targetDec,currentRa,currentDec);
+            }
             String description = "The selected object is: "+selectedObject.getType();
             builder.setMessage(description+"\n"+instructions);
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {

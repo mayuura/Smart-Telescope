@@ -26,6 +26,9 @@ public class TelescopeAdjustmentCalculator {
 
         return instructions;
     }
+    public static String calculateTelescopeAdjustment2(String targetRa, String targetDec, double currentRa, double currentDec){
+        return "";
+    }
     private static double sexagesimalToDegrees(String sexagesimal) {
         String[] components = sexagesimal.split(" ");
 

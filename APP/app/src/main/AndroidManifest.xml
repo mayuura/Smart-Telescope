@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name =" android.permission.ACCESS_NETWORK_STATE " />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!-- Include Bluetooth permissions -->
     <uses-permission android:name="android.permission.BLUETOOTH"/>
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
@@ -23,15 +23,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication"
         tools:targetApi="31">
+
+        <!-- Add the TelescopeMountActivity as the launcher activity -->
         <activity
-            android:name=".MainActivity"
+            android:name=".TelescopeMountActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-    </application>
 
+        <!-- Add the MainActivity -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+        </activity>
+    </application>
 </manifest>

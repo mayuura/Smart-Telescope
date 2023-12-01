@@ -1,0 +1,35 @@
+<!-- res/layout/activity_telescope_mount.xml -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".TelescopeMountActivity">
+
+    <TextView
+        android:id="@+id/instructionTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Please select your telescope mount type:"
+        android:textSize="18sp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="32dp"/>
+
+    <Button
+        android:id="@+id/raDecButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ra/Dec"
+        android:layout_below="@id/instructionTextView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"/>
+
+    <Button
+        android:id="@+id/altAzButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Alt-Az"
+        android:layout_below="@id/raDecButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"/>
+
+</RelativeLayout>
