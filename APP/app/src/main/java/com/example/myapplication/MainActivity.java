@@ -1,14 +1,21 @@
 package com.example.myapplication;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.icu.util.Calendar;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -18,7 +25,8 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import android.location.Location;
+import android.location.LocationManager;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,12 +34,15 @@ import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity  {
+
+    private static final int REQUEST_LOCATION =1 ;
     private TextView pitchInput, rollInput, yawInput, latitudeInput, longitudeInput;
     private double currentRa;
     private double currentDec;
     private TextView resultText;
     private Button calculateButton;
 
+    private LocationManager locationManager;
 
     // Default values
     private double defaultPitch = 0.0;
@@ -41,8 +52,19 @@ public class MainActivity extends AppCompatActivity  {
     private double defaultLongitude = 5.9939724;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {        super.onCreate(savedInstanceState);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //permissions
+        ActivityCompat.requestPermissions(this,new String[]
+                {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
+        locationManager=(LocationManager) getSystemService(Context.LOCATION_SERVICE);
+
+        //
+        handleGPS(locationManager);
+
+        //handleBLE
 
         //all these inputs are meant to be retrieved from the stm32
         pitchInput = findViewById(R.id.pitchInput);
@@ -52,6 +74,8 @@ public class MainActivity extends AppCompatActivity  {
         longitudeInput = findViewById(R.id.longitudeInput);
         resultText = findViewById(R.id.resultText);
         calculateButton = findViewById(R.id.calculateButton);
+
+        
 
         // Set default values
         pitchInput.setText(String.valueOf(defaultPitch));
@@ -63,6 +87,7 @@ public class MainActivity extends AppCompatActivity  {
             @SuppressLint("SetTextI18n")
             @Override
             public void onClick(View view) {//what happens when we click the button
+
 
 
                 double ra = calculateRA(defaultRoll, defaultLongitude);
@@ -162,8 +187,88 @@ public class MainActivity extends AppCompatActivity  {
 
     }
 
+    private void handleGPS(LocationManager locationManager){
+        if (!locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER))
+        {
+            //Write Function To enable gps
+
+            OnGPS();
+        }
+        else
+        {
+            //GPS is already On then
+
+            getLocation();
+        }
+    }
+
+    private void getLocation() {
+
+        //Check Permissions again
+
+        if (ActivityCompat.checkSelfPermission(MainActivity.this,Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MainActivity.this,
+
+                Manifest.permission.ACCESS_COARSE_LOCATION) !=PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions(this,new String[]
+                    {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
+        }
+        else
+        {
+            Location LocationGps= locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            Location LocationNetwork=locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            Location LocationPassive=locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+
+            if (LocationGps !=null)
+            {
+                defaultLatitude=LocationGps.getLatitude();
+                defaultLongitude=LocationGps.getLongitude();
 
 
+
+            }
+            else if (LocationNetwork !=null)
+            {
+                defaultLatitude=LocationNetwork.getLatitude();
+                defaultLongitude=LocationNetwork.getLongitude();
+
+            }
+            else if (LocationPassive !=null)
+            {
+                defaultLatitude=LocationPassive.getLatitude();
+                defaultLongitude=LocationPassive.getLongitude();
+
+
+            }
+            else
+            {
+                Toast.makeText(this, "Can't Get Your Location", Toast.LENGTH_SHORT).show();
+            }
+
+            //Thats All Run Your App
+        }
+
+    }
+
+    private void OnGPS() {
+
+        final AlertDialog.Builder builder= new AlertDialog.Builder(this);
+
+        builder.setMessage("Enable GPS").setCancelable(false).setPositiveButton("YES", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+            }
+        }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                dialog.cancel();
+            }
+        });
+        final AlertDialog alertDialog=builder.create();
+        alertDialog.show();
+    }
 
 
     private class SimbadQueryAsyncTask extends AsyncTask<String, Void, String> {

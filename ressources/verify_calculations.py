@@ -11,11 +11,11 @@ from astropy.time import Time
 import astropy.units as u
 
 # Your telescope's location
-latitude = 47.2520176
-longitude = 5.9939724
+latitude = 47.2496387
+longitude = 5.9925203
 #values for 15/11
-calculated_ra=319.95114517284713
-calculated_dec=42.747982400000005
+calculated_ra=74.8923781665778
+calculated_dec=42.7503613
 
 # Use Skyfield to calculate RA and Dec
 ts = load.timescale()
@@ -25,7 +25,7 @@ observer = telescope_location.at(t)
 ra, dec, _ = observer.radec()
 
 # Compare with your calculated values
-print("Skyfield - Calculated RA:", ra._degrees, "Calculated Dec:", dec.degrees)
+print("Skyfield - Calculated RA:", ra, "Calculated Dec:", dec)
 print("Your Calculations - RA:", calculated_ra, "Dec:", calculated_dec)
 
 
