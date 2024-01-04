@@ -15,16 +15,20 @@ public class CelestialObject {
     private String ra;
     private String dec;
     private String distance;//angular distance
+    private String alt;
+    private String az;
 
 
     // Constructor to initialize the object
-    public CelestialObject(String identifier,String type, String coordinates, String distance) {
+    public CelestialObject(String identifier,String type, String coordinates, String distance,String alt, String az) {
         this.identifier = identifier;
         String typeDescription=SimbadObjectType.getDescription(type);
         this.type=type+": "+typeDescription;
         this.ra=coordinateSplitter(coordinates).get(0);
         this.dec=coordinateSplitter(coordinates).get(1);
         this.distance = distance;
+        this.alt=alt;
+        this.az=az;
 
     }
 
@@ -72,6 +76,18 @@ public class CelestialObject {
 
     public String getDistance() {
         return distance;
+    }
+
+    public String getAlt() {
+        return alt;
+    }
+
+    public String getAz() {
+        return az;
+    }
+
+    public void setAlt(String alt) {
+        this.alt = alt;
     }
 
     public void setIdentifier(String identifier) {
@@ -168,7 +184,7 @@ public class CelestialObject {
             Log.d("Type : ",type);
 
             //create the object
-            CelestialObject object=new CelestialObject(identifier,type,coord,distAsec);
+            CelestialObject object=new CelestialObject(identifier,type,coord,distAsec,"","");
             list.add(object);
         }
         return list;
@@ -187,6 +203,11 @@ public class CelestialObject {
         } catch (NumberFormatException e) {
             return false;
         }
+    }
+    public List<CelestialObject> jsonToObjects(String data){
+        List<CelestialObject> out=new ArrayList<>();
+
+        return out;
     }
 
 }

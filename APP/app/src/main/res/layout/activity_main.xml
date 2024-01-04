@@ -8,62 +8,114 @@
     tools:context=".MainActivity">
 
     <!-- Input fields for pitch, roll, yaw, latitude, and longitude -->
-    <EditText
+    <TextView
         android:id="@+id/pitchInput"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="@string/hint_pitch"
+        android:layout_height="50dp"
+        android:layout_marginStart="200dp"
         android:autofillHints="number"
+        android:hint="@string/hint_pitch"
         android:inputType="number"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"/>
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:id="@+id/pitchHint"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:text="@string/hint_pitch"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-
-    <EditText
+    <TextView
         android:id="@+id/rollInput"
         android:layout_width="0dp"
         android:layout_height="50dp"
-        android:hint="@string/hint_roll"
+        android:layout_marginStart="200dp"
         android:autofillHints="number"
+        android:hint="@string/hint_roll"
         android:inputType="number"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/pitchInput" />
+    <TextView
+        android:id="@+id/rollHint"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:inputType="number"
+        android:text="@string/hint_roll"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pitchHint" />
 
-    <EditText
+    <TextView
         android:id="@+id/yawInput"
         android:layout_width="0dp"
         android:layout_height="50dp"
-        android:hint="@string/hint_yaw"
+        android:layout_marginStart="200dp"
         android:autofillHints="number"
+        android:hint="@string/hint_yaw"
         android:inputType="number"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/rollInput" />
+    <TextView
+        android:id="@+id/yawHint"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:autofillHints="number"
+        android:text="@string/hint_yaw"
+        android:inputType="number"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rollHint" />
 
-    <EditText
+    <TextView
         android:id="@+id/latitudeInput"
         android:layout_width="0dp"
         android:layout_height="50dp"
+        android:layout_marginStart="200dp"
         android:autofillHints="number"
         android:hint="@string/hint_latitude"
         android:inputType="number"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/yawInput" />
+    <TextView
+        android:id="@+id/latitudehint"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:autofillHints="number"
+        android:text="@string/hint_latitude"
+        android:inputType="number"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/yawHint" />
 
-    <EditText
+    <TextView
         android:id="@+id/longitudeInput"
         android:layout_width="0dp"
         android:layout_height="50dp"
-        android:hint="@string/hint_longitude"
+        android:layout_marginStart="200dp"
         android:autofillHints="number"
+        android:hint="@string/hint_longitude"
         android:inputType="number"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/latitudeInput" />
+    <TextView
+        android:id="@+id/longitudeHint"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:autofillHints="number"
+        android:text="@string/hint_longitude"
+        android:inputType="number"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/latitudehint" />
 
     <!-- Button to trigger the calculation and query -->
 
@@ -78,6 +130,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
+        android:backgroundTint="#741483"
         app:layout_constraintTop_toBottomOf="@+id/longitudeInput" />
 
     <TextView
@@ -112,6 +165,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.091"
         app:layout_constraintStart_toStartOf="parent"
+        android:backgroundTint="#741483"
         app:layout_constraintTop_toBottomOf="@+id/calculateButton" />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

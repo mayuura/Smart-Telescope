@@ -27,6 +27,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.location.Location;
 import android.location.LocationManager;
+
+import org.json.JSONException;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,12 +47,19 @@ public class MainActivity extends AppCompatActivity  {
 
     private LocationManager locationManager;
 
+
     // Default values
     private double defaultPitch = 0.0;
     private double defaultRoll = 0.0;
     private double defaultYaw = 0.0;
-    private double defaultLatitude = 47.2520176;
-    private double defaultLongitude = 5.9939724;
+    private double defaultLatitude ;
+    private double defaultLongitude ;
+    private double currentAlt=0.4; //Km
+
+    private String currentDay=DateFormatter.formatDate(DateFormatter.getCurrentDate());
+    private String nextDay=DateFormatter.formatDate(DateFormatter.getFollowingDate());
+
+    private List<CelestialObject> listObservable=new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +89,7 @@ public class MainActivity extends AppCompatActivity  {
 
         // Set default values
         pitchInput.setText(String.valueOf(defaultPitch));
+        pitchInput.setHint(getString(R.string.hint_pitch));
         rollInput.setText(String.valueOf(defaultRoll));
         yawInput.setText(String.valueOf(defaultYaw));
         latitudeInput.setText(String.valueOf(defaultLatitude));
@@ -102,6 +113,13 @@ public class MainActivity extends AppCompatActivity  {
                 String simbadApiUrl = "https://simbad.cds.unistra.fr/simbad/sim-coo?output.format=ASCII&Coord="+ra+"d+"+dec+"d&Radius=10&Radius.unit=arcmin";
 
                 // Execute the Simbad API query asynchronously
+
+
+                //Horizons API URL for jupiter
+                String horizonsApiUrl="https://ssd.jpl.nasa.gov/api/horizons.api?format=text&MAKE_EPHEM=YES&OBJ_DATA='YES'&COMMAND=599&EPHEM_TYPE=OBSERVER&CENTER='coord@399'&COORD_TYPE=GEODETIC&START_TIME='"+currentDay+"'&STOP_TIME='"+nextDay+"'&STEP_SIZE='1 HOURS'&QUANTITIES='1,2,3,47,48'&REF_SYSTEM='ICRF'&CAL_FORMAT='CAL'&CAL_TYPE='M'&TIME_DIGITS='MINUTES'&ANG_FORMAT='HMS'&APPARENT='AIRLESS'&RANGE_UNITS='AU'&SUPPRESS_RANGE_RATE='NO'&SKIP_DAYLT='NO'&SOLAR_ELONG='0,180'&EXTRA_PREC='NO'&R_T_S_ONLY='NO'&CSV_FORMAT='NO'";
+                String apiUrl="https://api.visibleplanets.dev/v3?latitude="+defaultLatitude+"&longitude="+defaultLongitude+"&showCoords=true";
+                //new HorizonsQueryAsyncTask().execute(horizonsApiUrl);
+                new ApiQueryAsyncTask().execute(apiUrl);
                 new SimbadQueryAsyncTask().execute(simbadApiUrl);
             }
         });
@@ -245,7 +263,6 @@ public class MainActivity extends AppCompatActivity  {
                 Toast.makeText(this, "Can't Get Your Location", Toast.LENGTH_SHORT).show();
             }
 
-            //Thats All Run Your App
         }
 
     }
@@ -302,10 +319,12 @@ public class MainActivity extends AppCompatActivity  {
             Spinner objectSpinner = findViewById(R.id.objectSpinner);
             List<String> objectNames = new ArrayList<>();
             objectNames.add("Select an object");  // Default item
-
-            for (CelestialObject celestialObject : CelestialObject.asciiToObjects(result)) {
+            //from Simbad
+            for (CelestialObject celestialObject : listObservable) {
                 objectNames.add(celestialObject.getIdentifier());
             }
+            //from Api
+
 
             ArrayAdapter<String> adapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_spinner_item, objectNames);
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -320,7 +339,8 @@ public class MainActivity extends AppCompatActivity  {
                     if (!selectedObjectName.equals("Select an object")) {
                         // Perform actions based on the selected object
                         // For example, display details or perform another API query
-                        handleSelectedObject(CelestialObject.asciiToObjects(result).get(position - 1));
+                        handleSelectedObject(listObservable.get(position - 1));
+                        //we can add another if statement for the other list coming from the api
                     }
                 }
 
@@ -333,7 +353,7 @@ public class MainActivity extends AppCompatActivity  {
 
         // Method to handle the Simbad query result on the main thread , for now i am just using it to debug
         private void handleSimbadQueryResult(String result) {
-
+            listObservable.addAll(CelestialObject.asciiToObjects(result));
             Log.d("processed data :", CelestialObject.paresedDataToString(CelestialObject.asciiParser(result)));
             Log.d("objects :", CelestialObject.listOfObjectsToString(CelestialObject.asciiToObjects(result)));
         }
@@ -352,15 +372,20 @@ public class MainActivity extends AppCompatActivity  {
 
             String targetRa=selectedObject.getRa();
             String targetDec=selectedObject.getDec();
-            Log.d("targetRa : ",targetRa);
-            Log.d("targetDec : ",targetDec);
+            String targetAltitude=selectedObject.getAlt();
+            String targetAz=selectedObject.getAz();
+
             String instructions="";
             if(TelescopeMountActivity.getMount().equals("Ra/Dec")) {
                  instructions = TelescopeAdjustmentCalculator.calculateTelescopeAdjustment(targetRa, targetDec, currentRa, currentDec);
             }
             else{
-                instructions = TelescopeAdjustmentCalculator.calculateTelescopeAdjustment2(targetRa, targetDec, currentRa, currentDec);
-
+                if(targetAltitude=="" || targetAz=="") {
+                    instructions = TelescopeAdjustmentCalculator.calculateTelescopeAdjustment2(targetRa, targetDec, currentRa, currentDec);
+                }
+                else{
+                    instructions=TelescopeAdjustmentCalculator.calculateTelescopeAdjustment3(targetAltitude,targetAz);
+                }
             }
             String description = "The selected object is: "+selectedObject.getType();
             builder.setMessage(description+"\n"+instructions);
@@ -377,5 +402,109 @@ public class MainActivity extends AppCompatActivity  {
         }
 
     }
+    private class HorizonsQueryAsyncTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... urls) {
+            // Perform the Horizons query in the background
+            try {
+                return HttpUtils.fetchData(urls[0]);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            // Handle the Horizons query result on the main thread
+            if (result != null) {
+                Log.d("HorizonsQueryResult", result);
+                // Handle the response (parse and extract the data)
+                handleHorizonsQueryResult(result);
+                // Call any other methods or update UI as needed
+            } else {
+                Log.e("HorizonsQueryResult", "Error in Horizons query");
+                // Handle error condition, update UI or show an error message
+            }
+        }
+
+        private void handleHorizonsQueryResult(String result) {
+            //1-parse the result string
+            int currentHour=HorizonDataParser.getCurrentHour();
+            Log.d("row test",HorizonDataParser.getRowForHour(getResultString(result),currentHour));
+            //2-fill the celestial object with its details
+
+        }
+
+        //method to reduce the actual output into the relevant data we need
+        private String getResultString(String result) {
+            // Implement the logic to parse and extract data from the Horizons query result
+            // You can create a method similar to handleSimbadQueryResult if needed
+            //fill the observable planets list and give it to the spinner
+            String start="$$SOE";
+            String end="$$EOE";
+            String header="*****************************************************************************************************************************************************\n" +
+                    "                                                                                                     Date__(UT)__HR:MN     R.A._____(ICRF)_____DEC  R.A.__(a-apparent)__DEC  dRA*cosD d(DEC)/dt  Sky_motion  Sky_mot_PA  RelVel-ANG  Lun_Sky_Brt  sky_SNR\n" +
+                    "                                                                                                    ***************************************************************************************************************************************\n";
+            int s_index=result.indexOf(start);
+            int e_index=result.indexOf(end);
+            return result.substring(s_index+5,e_index);
+        }
+    }
+    private class ApiQueryAsyncTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... urls) {
+            // Perform the Horizons query in the background
+            try {
+                return HttpUtils.fetchData(urls[0]);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            // Handle the Horizons query result on the main thread
+            if (result != null) {
+                Log.d("ApiQueryResult", result);
+                // Handle the response (parse and extract the data)
+                handleApiQueryResult(result);
+                // Call any other methods or update UI as needed
+            } else {
+                Log.e("ApiQueryResult", "Error in Horizons query");
+                // Handle error condition, update UI or show an error message
+            }
+        }
+
+        private void handleApiQueryResult(String result)  {
+            //1-parse the result string
+            int currentHour=HorizonDataParser.getCurrentHour();
+            Log.d("string size", String.valueOf(result.length()));
+            try {
+                ApiDataParser.test(result);
+                List<CelestialObject> listFromJson=ApiDataParser.jsonToObjects(result);
+                Log.d("check",listObservable.size()+"  "+listFromJson);
+                listObservable=listFromJson;
+
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+            //Log.d("row test",HorizonDataParser.getRowForHour(result,currentHour));
+            //2-fill the celestial object with its details
+
+        }
+        private  <T> List<T> concatenateLists(List<T> list1, List<T> list2) {
+            // Create a new list and add all elements from list1
+            List<T> result = new ArrayList<>(list1);
+
+            // Add all elements from list2
+            result.addAll(list2);
+
+            return result;
+        }
+
+        //method to reduce the actual output into the relevant data we need
+
+    }
+
 }
 

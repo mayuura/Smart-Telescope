@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -56,8 +57,9 @@ public class TelescopeMountActivity extends AppCompatActivity {
                 }
             }
         };
-        registerReceiver(mConnectionStatusReceiver, new IntentFilter(BluetoothLeService.ACTION_CONNECTION_STATUS));
-
+        if(mConnectionStatusReceiver!=null) {
+            registerReceiver(mConnectionStatusReceiver, new IntentFilter(BluetoothLeService.ACTION_CONNECTION_STATUS));
+        }
         connection.setText(connectionManager.startDeviceConnection()+" "+connection_status);
 
         raDecButton.setOnClickListener(new View.OnClickListener() {
@@ -76,13 +78,15 @@ public class TelescopeMountActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // If Alt-Az mount is selected, pass the information to MainActivity
-                Intent intent = new Intent(TelescopeMountActivity.this, DeviceScanActivity.class);
+                Intent intent = new Intent(TelescopeMountActivity.this, MainActivity.class);
                 intent.putExtra("mountType", "Alt-Az");
                 mount="Alt-Az";
                 startActivity(intent);
                 finish();
             }
         });
+
+
     }
     public static String getMount(){
         return mount;
