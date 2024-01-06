@@ -11,6 +11,7 @@
         android:layout_width="323dp"
         android:layout_height="298dp"
         android:layout_centerHorizontal="true"
+        android:visibility="invisible"
         app:srcCompat="@drawable/_a5841d76_3bb6_428f_882a_03a6ce7450ea_removebg_preview" />
 
     <TextView
@@ -39,7 +40,7 @@
         android:text="Ra/Dec"
         android:layout_below="@id/instructionTextView"
         android:layout_centerHorizontal="true"
-        android:backgroundTint="#741483"
+        android:backgroundTint="#4F347E"
         android:layout_marginTop="16dp"/>
 
     <Button
@@ -49,7 +50,7 @@
         android:text="Alt-Az"
         android:layout_below="@id/raDecButton"
         android:layout_centerHorizontal="true"
-        android:backgroundTint="#741483"
+        android:backgroundTint="#4F347E"
         android:layout_marginTop="16dp"/>
 
 
