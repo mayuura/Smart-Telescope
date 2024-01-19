@@ -30,7 +30,7 @@ public class TelescopeAdjustmentCalculator {
         //convert ra/dec to alt az
 
         return  "Your telescope Alt should be : " + targetRa+".\n"+
-                "The telescope's Azimuth should be " + targetDec + " degrees.";
+                "The telescope's Azimuth should be " + targetDec + ".";
 
     }
     private static double sexagesimalToDegrees(String sexagesimal) {

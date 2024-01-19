@@ -17,7 +17,7 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
 
         // Initialize views
-        //ImageView logoImageView = findViewById(R.id.logoImageView);
+        //.ImageView logoImageView = findViewById(R.id.logoImageView);
         TextView appNameTextView = findViewById(R.id.appNameTextView);
         TextView appDescriptionTextView = findViewById(R.id.appDescriptionTextView);
         Button getStartedButton = findViewById(R.id.getStartedButton);

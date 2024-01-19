@@ -74,12 +74,13 @@ public class MainActivity extends AppCompatActivity  {
         //
         handleGPS(locationManager);
 
-        //handleBLE
+        //handleBLE : probably using an async task
 
         //all these inputs are meant to be retrieved from the stm32
         pitchInput = findViewById(R.id.pitchInput);
         rollInput = findViewById(R.id.rollInput);
         yawInput = findViewById(R.id.yawInput);
+
         latitudeInput = findViewById(R.id.latitudeInput);
         longitudeInput = findViewById(R.id.longitudeInput);
         resultText = findViewById(R.id.resultText);
@@ -215,6 +216,7 @@ public class MainActivity extends AppCompatActivity  {
         else
         {
             //GPS is already On then
+            Log.d("getLocation method", "true");
 
             getLocation();
         }
@@ -228,6 +230,7 @@ public class MainActivity extends AppCompatActivity  {
 
                 Manifest.permission.ACCESS_COARSE_LOCATION) !=PackageManager.PERMISSION_GRANTED)
         {
+            Log.d("first condition","true");
             ActivityCompat.requestPermissions(this,new String[]
                     {Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION);
         }
@@ -241,7 +244,7 @@ public class MainActivity extends AppCompatActivity  {
             {
                 defaultLatitude=LocationGps.getLatitude();
                 defaultLongitude=LocationGps.getLongitude();
-
+                Log.d("lat1", String.valueOf(LocationGps.getLatitude()));
 
 
             }
@@ -249,18 +252,21 @@ public class MainActivity extends AppCompatActivity  {
             {
                 defaultLatitude=LocationNetwork.getLatitude();
                 defaultLongitude=LocationNetwork.getLongitude();
+                Log.d("lat2", String.valueOf(LocationNetwork.getLatitude()));
 
             }
             else if (LocationPassive !=null)
             {
                 defaultLatitude=LocationPassive.getLatitude();
                 defaultLongitude=LocationPassive.getLongitude();
+                Log.d("lat3", String.valueOf(LocationPassive.getLatitude()));
 
 
             }
             else
             {
                 Toast.makeText(this, "Can't Get Your Location", Toast.LENGTH_SHORT).show();
+                Log.d("error","true");
             }
 
         }
@@ -402,54 +408,7 @@ public class MainActivity extends AppCompatActivity  {
         }
 
     }
-    private class HorizonsQueryAsyncTask extends AsyncTask<String, Void, String> {
-        @Override
-        protected String doInBackground(String... urls) {
-            // Perform the Horizons query in the background
-            try {
-                return HttpUtils.fetchData(urls[0]);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
 
-        @Override
-        protected void onPostExecute(String result) {
-            // Handle the Horizons query result on the main thread
-            if (result != null) {
-                Log.d("HorizonsQueryResult", result);
-                // Handle the response (parse and extract the data)
-                handleHorizonsQueryResult(result);
-                // Call any other methods or update UI as needed
-            } else {
-                Log.e("HorizonsQueryResult", "Error in Horizons query");
-                // Handle error condition, update UI or show an error message
-            }
-        }
-
-        private void handleHorizonsQueryResult(String result) {
-            //1-parse the result string
-            int currentHour=HorizonDataParser.getCurrentHour();
-            Log.d("row test",HorizonDataParser.getRowForHour(getResultString(result),currentHour));
-            //2-fill the celestial object with its details
-
-        }
-
-        //method to reduce the actual output into the relevant data we need
-        private String getResultString(String result) {
-            // Implement the logic to parse and extract data from the Horizons query result
-            // You can create a method similar to handleSimbadQueryResult if needed
-            //fill the observable planets list and give it to the spinner
-            String start="$$SOE";
-            String end="$$EOE";
-            String header="*****************************************************************************************************************************************************\n" +
-                    "                                                                                                     Date__(UT)__HR:MN     R.A._____(ICRF)_____DEC  R.A.__(a-apparent)__DEC  dRA*cosD d(DEC)/dt  Sky_motion  Sky_mot_PA  RelVel-ANG  Lun_Sky_Brt  sky_SNR\n" +
-                    "                                                                                                    ***************************************************************************************************************************************\n";
-            int s_index=result.indexOf(start);
-            int e_index=result.indexOf(end);
-            return result.substring(s_index+5,e_index);
-        }
-    }
     private class ApiQueryAsyncTask extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... urls) {
@@ -477,7 +436,7 @@ public class MainActivity extends AppCompatActivity  {
 
         private void handleApiQueryResult(String result)  {
             //1-parse the result string
-            int currentHour=HorizonDataParser.getCurrentHour();
+
             Log.d("string size", String.valueOf(result.length()));
             try {
                 ApiDataParser.test(result);

@@ -44,6 +44,11 @@
             android:name=".MainActivity"
             android:exported="true">
         </activity>
+        <activity
+            android:name=".BleActivity"
+            android:exported="true">
+        </activity>
+
     </application>
     <!--<application android:label="@string/app_name"
         android:icon="@drawable/ic_launcher"
