@@ -1,3 +1,11 @@
-App  : android app
+Smart Telescope : a companion app that is meant to make stargazing easier.Using gps and sensor data , the app gives the user a list of observable objects and the relevant instructions to help him observe the chosen object from his telescope.
+App  : android app has 3 activitites : 
+-home activity which gives a description of the app and has a getting started button . 
+-Telescope mount activity to choose the mount of the telescope (the choice controls the output of the app)
+-Main activity : gets data from the sensor via ble (not integrated yet but the ble communication protocol is set up and the real time data display is working , tested on a seperate activity ), and gets
+the current gps location and uses them to query to two seperate databases to get relevant data on observable celestial objects (relevant data changes based on your mount).After the query , you get a list of celestial object that are observable
+and upon choosing one from the list you get relevant data that help you observe it .
+Bonus : Ble activity is a test activity created to test the ble protocol and real time data display but it is custom made for my device(to test on another device change the device_A_address attribute) . It is not a classic scanner/control activity .The activity has a button , and 2 text views. but upon clicking on the connect button 
+an automatic connection is initiated to my device , and the first textview is updated to show the connection status . When connection is established , notifications (remote and local ) are enabled , and the second textview displays the real time data.
 
 
