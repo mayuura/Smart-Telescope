@@ -8,71 +8,166 @@
     tools:context=".MainActivity">
 
     <!-- Input fields for pitch, roll, yaw, latitude, and longitude -->
-    <EditText
+    <TextView
         android:id="@+id/pitchInput"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="Pitch (degrees)"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_height="50dp"
+        android:layout_marginStart="200dp"
+        android:autofillHints="number"
+        android:hint="@string/hint_pitch"
+        android:inputType="number"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"/>
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:id="@+id/pitchHint"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:text="@string/hint_pitch"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
+    <TextView
         android:id="@+id/rollInput"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="Roll (degrees)"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_height="50dp"
+        android:layout_marginStart="200dp"
+        android:autofillHints="number"
+        android:hint="@string/hint_roll"
+        android:inputType="number"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pitchInput"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pitchInput" />
+    <TextView
+        android:id="@+id/rollHint"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:inputType="number"
+        android:text="@string/hint_roll"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pitchHint" />
 
-    <EditText
+    <TextView
         android:id="@+id/yawInput"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="Yaw (degrees)"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_height="50dp"
+        android:layout_marginStart="200dp"
+        android:autofillHints="number"
+        android:hint="@string/hint_yaw"
+        android:inputType="number"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rollInput"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rollInput" />
+    <TextView
+        android:id="@+id/yawHint"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:autofillHints="number"
+        android:text="@string/hint_yaw"
+        android:inputType="number"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rollHint" />
 
-    <EditText
+    <TextView
         android:id="@+id/latitudeInput"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="Latitude (degrees)"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_height="50dp"
+        android:layout_marginStart="200dp"
+        android:autofillHints="number"
+        android:hint="@string/hint_latitude"
+        android:inputType="number"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/yawInput"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/yawInput" />
+    <TextView
+        android:id="@+id/latitudehint"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:autofillHints="number"
+        android:text="@string/hint_latitude"
+        android:inputType="number"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/yawHint" />
 
-    <EditText
+    <TextView
         android:id="@+id/longitudeInput"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:hint="Longitude (degrees)"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_height="50dp"
+        android:layout_marginStart="200dp"
+        android:autofillHints="number"
+        android:hint="@string/hint_longitude"
+        android:inputType="number"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/latitudeInput"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/latitudeInput" />
+    <TextView
+        android:id="@+id/longitudeHint"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:autofillHints="number"
+        android:text="@string/hint_longitude"
+        android:inputType="number"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/latitudehint" />
 
     <!-- Button to trigger the calculation and query -->
+
+    <!-- Text view to display the results -->
+
     <Button
         android:id="@+id/calculateButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Calculate and Query"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="16dp"
+        android:text="@string/button_text"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/longitudeInput"/>
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        android:backgroundTint="#4F347E"
+        app:layout_constraintTop_toBottomOf="@+id/longitudeInput" />
 
-    <!-- Text view to display the results -->
     <TextView
         android:id="@+id/resultText"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/calculateButton"
+        android:layout_height="45dp"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
         android:text=""
-        android:gravity="center"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/calculateButton" />
+
+    <Spinner
+        android:id="@+id/objectSpinner"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="44dp"
+        android:entries="@array/objects_array"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/resultText" />
+
+    <Button
+        android:id="@+id/previousButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="356dp"
+        android:text="Previous"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.091"
+        app:layout_constraintStart_toStartOf="parent"
+        android:backgroundTint="#4F347E"
+        app:layout_constraintTop_toBottomOf="@+id/calculateButton" />
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,10 +6,19 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+/**
+ * This class uses the HttpURLConnection class to do an http request and fetch the data
+ */
 public class HttpUtils {
-
+    /**
+     * This method does the http request and fetched the data
+     * @param urlString : Url of the web page
+     * @return : the output data of the http request
+     * @throws IOException
+     */
     public static String fetchData(String urlString) throws IOException {
         URL url = new URL(urlString);
+        //open connection
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         try {
             BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
@@ -20,6 +29,7 @@ public class HttpUtils {
             }
             return stringBuilder.toString();
         } finally {
+            //disconnect when data fetching is done
             urlConnection.disconnect();
         }
     }

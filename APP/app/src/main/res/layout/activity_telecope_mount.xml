@@ -1,0 +1,59 @@
+<!-- res/layout/activity_telescope_mount.xml -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".TelescopeMountActivity">
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="323dp"
+        android:layout_height="298dp"
+        android:layout_centerHorizontal="true"
+        android:visibility="invisible"
+        app:srcCompat="@drawable/_a5841d76_3bb6_428f_882a_03a6ce7450ea_removebg_preview" />
+
+    <TextView
+        android:id="@+id/instructionTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Please select your telescope mount type:"
+        android:layout_below="@id/imageView2"
+        android:textSize="18sp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="32dp"/>
+
+    <TextView
+        android:id="@+id/connection_BLE"
+        android:layout_width="200dp"
+        android:layout_height="42dp"
+        android:layout_below="@id/altAzButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"
+        android:text="" />
+
+    <Button
+        android:id="@+id/raDecButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Ra/Dec"
+        android:layout_below="@id/instructionTextView"
+        android:layout_centerHorizontal="true"
+        android:backgroundTint="#4F347E"
+        android:layout_marginTop="16dp"/>
+
+    <Button
+        android:id="@+id/altAzButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Alt-Az"
+        android:layout_below="@id/raDecButton"
+        android:layout_centerHorizontal="true"
+        android:backgroundTint="#4F347E"
+        android:layout_marginTop="16dp"/>
+
+
+
+
+</RelativeLayout>

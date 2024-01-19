@@ -1,0 +1,13 @@
+<!-- res/drawable/background_gradient.xml -->
+
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+        android:startColor="#4F347E"
+        android:centerColor="#F6E2FA"
+        android:endColor="#EEE4F1"
+        android:angle="90
+" />
+
+    <!-- You can customize the radius if you want rounded corners -->
+    <!-- <corners android:radius="0dp" /> -->
+</shape>

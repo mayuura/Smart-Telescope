@@ -218,6 +218,6 @@ public class SimbadObjectType {
      * @return The description of the object type, or null if not found.
      */
     public static String getDescription(String objectType) {
-        return objectTypeDescriptions.get(objectType);
+        return objectTypeDescriptions.get(objectType.trim());//we use the trim method to get rid of the leading spaces
     }
 }
