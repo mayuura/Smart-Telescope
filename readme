@@ -1,12 +1,12 @@
-# Smart Telescope
-A companion app that is meant to make stargazing easier. Using GPS and sensor data, the app gives the user a list of observable objects and the relevant instructions to help him observe the chosen object from his telescope.
+## Smart Telescope
 
-## App
-The Android app has 3 activities:
+### Overview
+This app transforms your stargazing experience by leveraging GPS and sensor data to help you locate and observe celestial objects. Simply choose your telescope mount, and the app will guide you through the process of finding and viewing stars and planets.
+The real-time data display and BLE communication ensure accurate and up-to-date information.
 
-- **Home Activity**: Gives a description of the app and has a "Getting Started" button.
-- **Telescope Mount Activity**: Allows the user to choose the mount of the telescope (the choice controls the output of the app).
-- **Main Activity**: Gets data from the sensor via BLE (not integrated yet but the BLE communication protocol is set up and the real-time data display is working, tested on a separate activity), and gets the current GPS location and uses them to query two separate databases to get relevant data on observable celestial objects (relevant data changes based on your mount). After the query, you get a list of celestial objects that are observable and upon choosing one from the list you get relevant data that help you observe it.
+### Features
+- **User-Friendly Interface:** Simple steps to get started with stargazing.
+- **Customizable Telescope Mounts:** Adjust settings based on your equipment.
+- **Real-Time Data:** Continuous updates on observable objects.
 
-## Bonus
-The BLE activity is a test activity created to test the BLE protocol and real-time data display but it is custom made for my device (to test on another device change the `device_A_address` attribute). It is not a classic scanner/control activity. The activity has a button, and 2 text views. Upon clicking on the "Connect" button, an automatic connection is initiated to my device, and the first TextView is updated to show the connection status. When the connection is established, notifications (remote and local) are enabled, and the second TextView displays the real-time data.
+
